@@ -1,0 +1,18 @@
+# 환경 변수 파일
+.env
+.env.local
+.env.*.local
+
+# 노드 모듈
+node_modules/
+
+# 로그 파일
+*.log
+
+# 운영체제 파일
+.DS_Store
+Thumbs.db
+
+# IDE 설정 파일
+.idea/
+.vscode/ 
