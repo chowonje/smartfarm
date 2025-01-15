@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
     if (!priceData || priceData.length === 0) {
       return res.status(200).json({
         success: false,
-        errorMessage: "해당하는 농산물 가격 데이터를 찾을 수 없습니다."
+        errorMessage: "해당하는 농산물 가격 데이터를 찾을 수 없습��다."
       });
     }
 

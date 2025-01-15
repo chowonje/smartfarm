@@ -1,38 +1,46 @@
-# 스마트팜 프로젝트
+# User Management System
 
-## 프로젝트 소개
-스마트팜 관련 정보를 제공하는 웹 서비스입니다.
+이 프로젝트는 사용자 관리 시스템의 백엔드 서버를 포함합니다.
 
-## 주요 기능
-- 날씨 정보 조회
-- 스마트팜 관련 뉴스 조회
-- 농산물 가격 정보 조회
-- 지도 서비스
+## 서버 구조
 
-## API 목록
-### 1. 날씨 API
-// 서울 날씨 정보 조회
-GET http://localhost:3001/api/weather
-### 2. 뉴스 API
-// 스마트팜 관련 최신 뉴스 5개 조회
-GET http://localhost:3001/api/news
-### 3. 농산물 가격 API
-// 농산물 가격 정보 조회
-GET http://localhost:3001/api/price
-### 4. 지도 API
-// 지도 정보 조회
-GET http://localhost:3001/api/map
-// 위치 검색
-GET http://localhost:3001/api/map?query=강남역
+- Port: 5000
+- 기술 스택: Node.js, Express, MySQL
 
-// 특정 좌표의 지도
-GET http://localhost:3001/api/map?lat=37.498095&lng=127.027610
+### 주요 API 엔드포인트
 
-// 이름이 포함된 지도
-GET http://localhost:3001/api/map?name=강남역&lat=37.498095&lng=127.027610
+#### 인증 관련
+- POST `/api/auth/register` - 회원가입
+- POST `/api/auth/login` - 로그인
+- POST `/api/auth/logout` - 로그아웃
+- GET `/api/auth/check` - 로그인 상태 확인
 
-다음 단계는:
-프론트엔드 개발 시작
-API 연동 테스트
-에러 처리 보완
-성능 최적화
+#### 사용자 관리
+- GET `/api/auth/users` - 사용자 목록 조회
+- DELETE `/api/auth/users/:userId` - 사용자 삭제
+
+#### 관리자 전용
+- POST `/api/admin/login` - 관리자 로그인
+- GET `/api/admin/users` - 관리자용 사용자 목록 조회
+
+### 폴더 구조
+api/
+├── server/
+│ ├── routes/ # API 라우트 정의
+│ ├── models/ # 데이터베이스 모델
+│ ├── middleware/ # 미들웨어 함수들
+│ └── server.js # 메인 서버 파일
+├── client/ # 사용자 프론트엔드
+└── admin/ # 관리자 프론트엔드
+
+## 실행 방법
+
+1. 필요한 패키지 설치
+bash
+npm install
+
+2. 서버 실행
+bash
+npm start
+
+서버는 기본적으로 http://localhost:5000 에서 실행됩니다.

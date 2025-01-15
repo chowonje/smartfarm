@@ -2,79 +2,64 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// GET /api/map
 router.get('/', async (req, res) => {
   try {
-    const { query, lat, lng, name, id } = req.query;
-    const KAKAO_API_KEY = process.env.KAKAO_MAP_API_KEY;
-
-    // URL 생성 함수들
-    const createMapUrls = (lat, lng, name, id) => {
-      const urls = {};
-      
-      if (lat && lng) {
-        urls.map = `https://map.kakao.com/link/map/${lat},${lng}`;
-        if (name) {
-          urls.namedMap = `https://map.kakao.com/link/map/${name},${lat},${lng}`;
-        }
-        urls.roadview = `https://map.kakao.com/link/roadview/${lat},${lng}`;
-        urls.directions = `https://map.kakao.com/link/to/${name || '목적지'},${lat},${lng}`;
-      }
-      
-      if (id) {
-        urls.placeMap = `https://map.kakao.com/link/map/${id}`;
-        urls.placeRoadview = `https://map.kakao.com/link/roadview/${id}`;
-        urls.placeDirections = `https://map.kakao.com/link/to/${id}`;
-      }
-      
-      return urls;
-    };
-
-    // 검색 API 호출 (장소 검색)
-    const searchPlace = async (query) => {
-      if (!query) return null;
-      
-      try {
-        const response = await axios.get('https://dapi.kakao.com/v2/local/search/keyword', {
-          headers: {
-            Authorization: `KakaoAK ${KAKAO_API_KEY}`
-          },
-          params: {
-            query,
-            size: 5
-          }
-        });
-
-        return response.data.documents;
-      } catch (error) {
-        console.error('Kakao Search API Error:', error);
-        return null;
-      }
-    };
-
-    // 응답 데이터 구성
-    let responseData = {
-      success: true,
-      urls: createMapUrls(lat, lng, name, id)
-    };
-
-    // 검색어가 있는 경우 검색 결과 추가
-    if (query) {
-      const searchResults = await searchPlace(query);
-      if (searchResults) {
-        responseData.searchUrl = `https://map.kakao.com/link/search/${encodeURIComponent(query)}`;
-        responseData.searchResults = searchResults;
-      }
+    const { query } = req.query;
+    
+    if (!query || query.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "검색어를 입력해주세요."
+      });
     }
 
-    res.json(responseData);
+    const KAKAO_API_KEY = process.env.MAP_API_KEY;
+    if (!KAKAO_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        message: "카카오 API 키가 설정되지 않았습니다."
+      });
+    }
+
+    const response = await axios({
+      method: 'GET',
+      url: 'https://dapi.kakao.com/v2/local/search/keyword.json',
+      headers: {
+        'Authorization': `KakaoAK ${KAKAO_API_KEY}`
+      },
+      params: { 
+        query,
+        size: 1  // 결과 개수를 1개로 제한
+      }
+    });
+
+    if (!response.data.documents || response.data.documents.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "검색 결과가 없습니다."
+      });
+    }
+
+    // 첫 번째 결과만 반환
+    const firstResult = response.data.documents[0];
+    res.json({
+      success: true,
+      data: {
+        place_name: firstResult.place_name,
+        address_name: firstResult.address_name,
+        road_address_name: firstResult.road_address_name,
+        latitude: firstResult.y,
+        longitude: firstResult.x,
+        phone: firstResult.phone || ''
+      }
+    });
 
   } catch (error) {
-    console.error('Map API Error:', error);
+    console.error('API 요청 에러:', error);
     res.status(500).json({
       success: false,
-      error: "지도 정보를 가져오는데 실패했습니다.",
-      details: error.message
+      message: "서버 에러가 발생했습니다.",
+      error: error.message
     });
   }
 });

@@ -2,15 +2,10 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// GET /api/weather
 router.get('/', async (req, res) => {
   try {
     const city = req.query.city || "Seoul";
     const apiKey = process.env.WEATHER_API_KEY;
-    
-    // API 키 확인
-    console.log('Environment variables:', process.env);
-    console.log('Weather API Key:', apiKey);
     
     if (!apiKey) {
       throw new Error('Weather API key is not configured');
@@ -19,12 +14,8 @@ router.get('/', async (req, res) => {
     const lang = "kr";
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=${lang}&units=metric`;
     
-    console.log('Request URL:', url);
-
     const response = await axios.get(url);
     
-    console.log('Weather API Response:', response.data);
-
     const weatherData = {
       city: response.data.name,
       temperature: response.data.main.temp,
@@ -41,12 +32,68 @@ router.get('/', async (req, res) => {
     res.json(weatherData);
   } catch (error) {
     console.error('Weather API Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 위도/경도로 날씨 조회
+router.get('/location', async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    const apiKey = process.env.WEATHER_API_KEY;
+    
+    // 요청 파라미터 로깅
+    console.log('받은 위도/경도:', { lat, lon });
+    console.log('API Key:', apiKey ? '설정됨' : '설정되지 않음');
+
+    if (!apiKey) {
+      throw new Error('Weather API key is not configured');
+    }
+
+    if (!lat || !lon) {
+      throw new Error('위도와 경도가 필요합니다.');
+    }
+
+    const lang = "kr";
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=${lang}&units=metric`;
+    
+    // API 요청 URL 로깅
+    console.log('OpenWeather API 요청 URL:', url);
+
+    const response = await axios.get(url);
+    
+    // OpenWeather API 응답 로깅
+    console.log('OpenWeather API 응답:', response.data);
+
+    const weatherData = {
+      city: response.data.name,
+      temperature: response.data.main.temp,
+      description: response.data.weather[0].description,
+      humidity: response.data.main.humidity,
+      windSpeed: response.data.wind.speed,
+      feelsLike: response.data.main.feels_like,
+      tempMin: response.data.main.temp_min,
+      tempMax: response.data.main.temp_max,
+      sunrise: new Date(response.data.sys.sunrise * 1000),
+      sunset: new Date(response.data.sys.sunset * 1000)
+    };
+
+    // 가공된 날씨 데이터 로깅
+    console.log('클라이언트로 보내는 날씨 데이터:', weatherData);
+
+    res.json(weatherData);
+  } catch (error) {
+    // 에러 상세 로깅
+    console.error('Weather API 에러 상세:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+
     if (error.response?.status === 404) {
-      res.status(404).json({ error: '도시를 찾을 수 없습니다.' });
-    } else if (error.response?.status === 401) {
-      res.status(401).json({ error: 'API 키가 유효하지 않습니다.' });
+      res.status(404).json({ error: '해당 위치의 날씨 정보를 찾을 수 없습니다.' });
     } else {
-      res.status(500).json({ error: '날씨 데이터를 가져오는데 실패했습니다.' });
+      res.status(500).json({ error: error.message });
     }
   }
 });
