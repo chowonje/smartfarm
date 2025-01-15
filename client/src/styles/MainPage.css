@@ -1,0 +1,10 @@
+.main-page {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }

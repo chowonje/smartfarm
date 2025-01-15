@@ -1,0 +1,16 @@
+.main {
+  padding: 20px;
+  margin-top: 60px;  /* 헤더 높이만큼 여백 */
+  width: 100%;
+  transition: margin-left 0.3s ease;  /* 부드러운 전환 효과 */
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 사이드바가 열렸을 때 메인 영역 조정 */
+.sidebar.active + .main {
+  margin-left: 250px;  /* 사이드바 너비만큼 여백 */
+}

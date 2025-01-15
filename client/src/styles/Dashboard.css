@@ -1,0 +1,369 @@
+/* 대시보드 기본 스타일 */
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 게시판 공통 스타일 */
+.board_wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.board_title {
+  margin-bottom: 30px;
+}
+
+.board_title strong {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.board_title p {
+  margin-top: 5px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* 목록 스타일 */
+.board_list_wrap {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.board_filter {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.board_filter select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.board_list {
+  width: 100%;
+  border-top: 2px solid #000;
+}
+
+.board_list > div {
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  text-align: center;
+}
+
+.board_list > div:hover:not(.top) {
+  background: #f8f8f8;
+}
+
+.board_list .top {
+  background: #f8f8f8;
+  font-weight: 600;
+}
+
+.board_list .board-row {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.board_list .row-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+/* 각 열의 너비 조정 */
+.board_list .date { 
+  width: 15%; 
+  text-align: center;
+}
+
+.board_list .crop { 
+  width: 25%;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.board_list .status { 
+  width: 15%;
+  text-align: center;
+}
+
+.board_list .manager { 
+  width: 15%;
+  text-align: center;
+}
+
+/* 작성/수정 폼 스타일 */
+.board_write {
+  border-top: 2px solid #000;
+  padding: 20px;
+}
+
+.board_write .title,
+.board_write .info {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.board_write dl {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.board_write dt {
+  width: 100px;
+  font-weight: 600;
+}
+
+.board_write dd {
+  flex: 1;
+}
+
+.board_write input,
+.board_write select,
+.board_write textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* 센서 데이터 스타일 */
+.sensor_info {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.sensor_info h4 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.sensor_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.sensor_item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sensor_item span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.date-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* 버튼 스타일 */
+.bt_wrap {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0;
+}
+
+.btn {
+  display: inline-block;
+  min-width: 100px;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #0052a3;
+}
+
+/* 상태 표시 스타일 */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status-좋음 {
+  background: #e6ffe6;
+  color: #006600;
+}
+
+.status-보통 {
+  background: #fff3e6;
+  color: #cc7700;
+}
+
+.status-나쁨 {
+  background: #ffe6e6;
+  color: #cc0000;
+}
+
+/* 작물 카드 스타일 */
+.crop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.crop-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.crop-card:hover {
+  transform: translateY(-5px);
+}
+
+.crop-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.crop-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.crop-info {
+  padding: 15px;
+}
+
+.crop-info h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+}
+
+/* 페이지네이션 스타일 수정 */
+.board_page {
+  margin-top: 30px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.board_page a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.board_page a:hover {
+  background: #f8f8f8;
+  border-color: #999;
+}
+
+.board_page a.bt {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.board_page a.num {
+  font-weight: 500;
+}
+
+.board_page a.num.on {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #fff;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+  .board_wrap {
+    padding: 10px;
+  }
+
+  .board_list .date { 
+    width: 25%; 
+  }
+
+  .board_list .crop { 
+    width: 45%;
+    padding-left: 10px;
+  }
+
+  .board_list .status { 
+    width: 30%;
+  }
+
+  .board_list .manager {
+    display: none;
+  }
+
+  .sensor_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .board_page {
+    gap: 3px;
+  }
+  
+  .board_page a {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .board_list .date { 
+    display: none;
+  }
+
+  .board_list .crop { 
+    width: 60%;
+  }
+
+  .board_list .status { 
+    width: 40%;
+  }
+}
