@@ -8,12 +8,16 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5003/api/admin/login', {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
                 credentials: 'include'
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const data = await response.json();
             console.log('Login response:', data);  // 응답 데이터 확인
@@ -31,8 +35,8 @@ function Login() {
                 alert(data.message || '로그인 실패');
             }
         } catch (error) {
-            console.error('로그인 오류:', error);
-            alert('서버 오류 발생');
+            console.error('로그인 오류:', error.message);
+            alert('서버 연결에 실패했습니다. 서버가 실행중인지 확인해주세요.');
         }
     };
 

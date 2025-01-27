@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
+const fetch = require('node-fetch');
 
 // 작물 일지 조회
 router.get('/logs', async (req, res) => {
@@ -25,12 +26,46 @@ router.get('/logs', async (req, res) => {
   }
 });
 
-// 개별 작물 일지 조회
+// 날씨 데이터 포맷팅 유틸리티 함수
+const formatWeatherData = (weatherData) => {
+  const formatDateTime = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${date.toLocaleTimeString()}`;
+  };
+
+  // 날씨 데이터가 없는 경우 빈 문자열 반환
+  if (!weatherData) {
+    return {
+      weather_temp: '',
+      weather_desc: '',
+      weather_feels_like: '',
+      weather_humidity: '',
+      weather_wind_speed: '',
+      weather_temp_min: '',
+      weather_temp_max: '',
+      weather_sunrise: '',
+      weather_sunset: ''
+    };
+  }
+
+  return {
+    weather_temp: weatherData.temperature?.toString() || '',
+    weather_desc: weatherData.description || '',
+    weather_feels_like: weatherData.feelsLike?.toString() || '',
+    weather_humidity: weatherData.humidity?.toString() || '',
+    weather_wind_speed: weatherData.windSpeed?.toString() || '',
+    weather_temp_min: weatherData.tempMin?.toString() || '',
+    weather_temp_max: weatherData.tempMax?.toString() || '',
+    weather_sunrise: formatDateTime(weatherData.sunrise) || '',
+    weather_sunset: formatDateTime(weatherData.sunset) || ''
+  };
+};
+
+// 작물 일지 상세 조회
 router.get('/logs/:id', async (req, res) => {
   try {
-    console.log('Fetching single crop diary...');
     const { id } = req.params;
-    
     const { data, error } = await supabase
       .from('crop_diary')
       .select('*')
@@ -39,57 +74,67 @@ router.get('/logs/:id', async (req, res) => {
 
     if (error) {
       console.error('Supabase error:', error);
-      throw error;
+      return res.status(400).json({ error: error.message });
     }
-    
-    console.log('Data fetched:', data);
-    res.json(data);
+
+    if (!data) {
+      return res.status(404).json({ error: '작물 일지를 찾을 수 없습니다' });
+    }
+
+    // 데이터베이스에서 가져온 날씨 데이터를 그대로 사용
+    const responseData = {
+      ...data,
+      // 날씨 데이터는 데이터베이스에 저장된 값을 그대로 사용
+      weather_temp: data.weather_temp,
+      weather_desc: data.weather_desc,
+      weather_feels_like: data.weather_feels_like,
+      weather_humidity: data.weather_humidity,
+      weather_wind_speed: data.weather_wind_speed,
+      weather_temp_min: data.weather_temp_min,
+      weather_temp_max: data.weather_temp_max,
+      weather_sunrise: data.weather_sunrise,
+      weather_sunset: data.weather_sunset
+    };
+
+    console.log('Fetched crop diary:', responseData);
+    res.json(responseData);
   } catch (error) {
     console.error('Error fetching crop diary:', error);
-    res.status(500).json({ error: '데이터를 불러오는데 실패했습니다' });
+    res.status(500).json({ error: '작물 일지 조회에 실패했습니다' });
   }
 });
 
-// 작물 일지 생성 라우트 수정
+// 날씨 데이터 가져오는 유틸리티 함수
+const fetchWeatherData = async () => {
+  try {
+    const weatherResponse = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/weather`);
+    const weatherData = await weatherResponse.json();
+    return weatherData;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    return null;
+  }
+};
+
+// 작물 일지 생성 라우트
 router.post('/logs', async (req, res) => {
   try {
     console.log('Creating crop diary...');
-    const {
-      crop_name,
-      status,
-      manager,
-      content,
-      temperature,
-      humidity,
-      light,
-      ec,
-      water_temperature,
-      ph_level,
-      crop_type,
-      bed_number,
-      bed_sensor_id,
-      water_tank_id
-    } = req.body;
+    
+    // 날씨 데이터 자동 조회
+    const weatherData = await fetchWeatherData();
+    const formattedWeatherData = formatWeatherData(weatherData);
+
+    // 클라이언트 데이터와 날씨 데이터 병합
+    const combinedData = {
+      ...req.body,
+      ...formattedWeatherData,
+      created_at: new Date().toISOString()
+    };
 
     const { data, error } = await supabase
       .from('crop_diary')
-      .insert([{
-        crop_name,
-        status,
-        manager,
-        content,
-        temperature,
-        humidity,
-        light,
-        ec,
-        water_temperature,
-        ph_level,
-        crop_type,
-        bed_number,
-        bed_sensor_id,
-        water_tank_id,
-        created_at: new Date()
-      }])
+      .insert([combinedData])
       .select();
 
     if (error) {
@@ -105,7 +150,7 @@ router.post('/logs', async (req, res) => {
   }
 });
 
-// 작물 일지 수정 라우트 추가
+// 작물 일지 수정 라우트
 router.put('/logs/:id', async (req, res) => {
   try {
     console.log('Updating crop diary...', req.body);
@@ -121,7 +166,9 @@ router.put('/logs/:id', async (req, res) => {
       light,
       ec,
       water_temp,
-      ph
+      ph,
+      Gas
+      // 날씨 데이터는 제외
     } = req.body;
 
     const { data, error } = await supabase
@@ -137,11 +184,9 @@ router.put('/logs/:id', async (req, res) => {
         ec,
         water_temperature: water_temp,
         ph_level: ph,
-        crop_type: null,
-        bed_number: null,
-        bed_sensor_id: null,
-        water_tank_id: null,
+        Gas,
         updated_at: new Date()
+        // 날씨 데이터 필드 제외
       })
       .eq('id', id)
       .select();

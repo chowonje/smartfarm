@@ -26,7 +26,7 @@ const CropList = () => {
     const fetchCropLogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5003/api/crops/logs');
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/crops/logs`);
         console.log('Response status:', response.status);
         
         if (!response.ok) {

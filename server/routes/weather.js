@@ -2,6 +2,37 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
+// 서비스 함수 추가
+async function getSeoulWeather() {
+  try {
+    const apiKey = process.env.WEATHER_API_KEY;
+    const city = "Seoul";
+    const lang = "kr";
+    
+    if (!apiKey) {
+      throw new Error('Weather API key is not configured');
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=${lang}&units=metric`;
+    const response = await axios.get(url);
+    
+    return {
+      temperature: response.data.main.temp,
+      description: response.data.weather[0].description,
+      feelsLike: response.data.main.feels_like,
+      humidity: response.data.main.humidity,
+      windSpeed: response.data.wind.speed,
+      tempMin: response.data.main.temp_min,
+      tempMax: response.data.main.temp_max,
+      sunrise: new Date(response.data.sys.sunrise * 1000),
+      sunset: new Date(response.data.sys.sunset * 1000)
+    };
+  } catch (error) {
+    console.error('Weather API Error:', error);
+    throw error;
+  }
+}
+
 router.get('/', async (req, res) => {
   try {
     const city = req.query.city || "Seoul";
@@ -98,4 +129,5 @@ router.get('/location', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
+module.exports.getSeoulWeather = getSeoulWeather; 

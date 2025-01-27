@@ -17,7 +17,7 @@ function Dashboard() {
                     return;
                 }
 
-                const response = await fetch('http://localhost:5003/api/admin/farms', {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/farms`, {
                     headers: {
                         'Authorization': `Bearer ${adminToken}`
                     }

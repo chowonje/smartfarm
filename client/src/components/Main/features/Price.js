@@ -9,7 +9,7 @@ function Price({ activeTab }) {
   const fetchPrices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5003/api/price');
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/price`);
       if (response.data.success) {
         setPrices(response.data.data);
       }

@@ -9,7 +9,7 @@ function UserManagement() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5003/api/admin/users', {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/users`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
                 }
@@ -26,7 +26,7 @@ function UserManagement() {
     const handleDelete = async (userId) => {
         if (window.confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`http://localhost:5003/api/admin/users/${userId}`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('adminToken')}`

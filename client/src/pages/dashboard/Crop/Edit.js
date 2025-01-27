@@ -14,15 +14,25 @@ const CropEdit = () => {
     humidity: '',
     light: '',
     ec: '',
+    Gas: '',
     water_level: '',
-    water_temp: '',
-    ph: ''
+    water_temperature: '',
+    ph_level: '',
+    weather_temp: '',
+    weather_desc: '',
+    weather_feels_like: '',
+    weather_humidity: '',
+    weather_wind_speed: '',
+    weather_temp_min: '',
+    weather_temp_max: '',
+    weather_sunrise: '',
+    weather_sunset: ''
   });
 
   useEffect(() => {
     const fetchCropData = async () => {
       try {
-        const response = await fetch(`http://localhost:5003/api/crops/logs/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/crops/logs/${id}`);
         if (!response.ok) {
           throw new Error('데이터를 불러오는데 실패했습니다');
         }
@@ -37,9 +47,19 @@ const CropEdit = () => {
           humidity: data.humidity || '',
           light: data.light || '',
           ec: data.ec || '',
+          Gas: data.Gas || '',
           water_level: data.water_level || '',
-          water_temp: data.water_temperature || '',
-          ph: data.ph_level || ''
+          water_temperature: data.water_temp || '',
+          ph_level: data.ph || '',
+          weather_temp: data.weather_temp || '',
+          weather_desc: data.weather_desc || '',
+          weather_feels_like: data.weather_feels_like || '',
+          weather_humidity: data.weather_humidity || '',
+          weather_wind_speed: data.weather_wind_speed || '',
+          weather_temp_min: data.weather_temp_min || '',
+          weather_temp_max: data.weather_temp_max || '',
+          weather_sunrise: data.weather_sunrise || '',
+          weather_sunset: data.weather_sunset || ''
         });
 
         console.log('Loaded data:', data);
@@ -69,13 +89,14 @@ const CropEdit = () => {
       humidity: formData.humidity ? parseFloat(formData.humidity) : null,
       light: formData.light ? parseFloat(formData.light) : null,
       ec: formData.ec ? parseFloat(formData.ec) : null,
+      Gas: formData.Gas ? parseFloat(formData.Gas) : null,
       water_level: formData.water_level ? parseFloat(formData.water_level) : null,
-      water_temp: formData.water_temp ? parseFloat(formData.water_temp) : null,
+      water_temp: formData.water_temperature ? parseFloat(formData.water_temperature) : null,
       ph: formData.ph ? parseFloat(formData.ph) : null
     };
 
     try {
-      const response = await fetch(`http://localhost:5003/api/crops/logs/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/crops/logs/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -196,6 +217,17 @@ const CropEdit = () => {
                     step="0.1"
                   />
                 </div>
+                <div className="sensor_item">
+                  <span>가스 (ppm)</span>
+                  <input
+                    type="number"
+                    name="Gas"
+                    value={formData.Gas}
+                    onChange={handleChange}
+                    placeholder="가스"
+                    step="1"
+                  />
+                </div>
               </div>
             </div>
 
@@ -217,8 +249,8 @@ const CropEdit = () => {
                   <span>수온 (°C)</span>
                   <input
                     type="number"
-                    name="water_temp"
-                    value={formData.water_temp}
+                    name="water_temperature"
+                    value={formData.water_temperature}
                     onChange={handleChange}
                     placeholder="수온"
                     step="0.1"
@@ -228,11 +260,107 @@ const CropEdit = () => {
                   <span>pH</span>
                   <input
                     type="number"
-                    name="ph"
-                    value={formData.ph}
+                    name="ph_level"
+                    value={formData.ph_level}
                     onChange={handleChange}
                     placeholder="pH"
                     step="0.1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="sensor_info">
+              <h4>날씨 데이터</h4>
+              <div className="sensor_grid">
+                <div className="sensor_item">
+                  <span>온도 (°C)</span>
+                  <input
+                    type="number"
+                    name="weather_temp"
+                    value={formData.weather_temp}
+                    readOnly
+                    placeholder="온도"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>날씨 설명</span>
+                  <input
+                    type="text"
+                    name="weather_desc"
+                    value={formData.weather_desc}
+                    readOnly
+                    placeholder="날씨 설명"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>체감 온도 (°C)</span>
+                  <input
+                    type="number"
+                    name="weather_feels_like"
+                    value={formData.weather_feels_like}
+                    readOnly
+                    placeholder="체감 온도"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>습도 (%)</span>
+                  <input
+                    type="number"
+                    name="weather_humidity"
+                    value={formData.weather_humidity}
+                    readOnly
+                    placeholder="습도"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>풍속 (m/s)</span>
+                  <input
+                    type="number"
+                    name="weather_wind_speed"
+                    value={formData.weather_wind_speed}
+                    readOnly
+                    placeholder="풍속"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>최저 온도 (°C)</span>
+                  <input
+                    type="number"
+                    name="weather_temp_min"
+                    value={formData.weather_temp_min}
+                    readOnly
+                    placeholder="최저 온도"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>최고 온도 (°C)</span>
+                  <input
+                    type="number"
+                    name="weather_temp_max"
+                    value={formData.weather_temp_max}
+                    readOnly
+                    placeholder="최고 온도"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>일출 시간</span>
+                  <input
+                    type="text"
+                    name="weather_sunrise"
+                    value={formData.weather_sunrise}
+                    readOnly
+                    placeholder="일출 시간"
+                  />
+                </div>
+                <div className="sensor_item">
+                  <span>일몰 시간</span>
+                  <input
+                    type="text"
+                    name="weather_sunset"
+                    value={formData.weather_sunset}
+                    readOnly
+                    placeholder="일몰 시간"
                   />
                 </div>
               </div>

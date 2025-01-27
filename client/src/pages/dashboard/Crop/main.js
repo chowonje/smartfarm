@@ -41,7 +41,7 @@ const CropMain = () => {
     const fetchCropSummaries = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5003/api/crops/logs');
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/crops/logs`);
         if (!response.ok) {
           throw new Error('데이터를 불러오는데 실패했습니다');
         }

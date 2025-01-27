@@ -24,7 +24,7 @@ const DeviceEdit = () => {
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
-        const response = await fetch(`http://localhost:5003/api/device/devices/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/device/devices/${id}`);
         if (!response.ok) {
           throw new Error('데이터를 불러오는데 실패했습니다');
         }
@@ -78,7 +78,7 @@ const DeviceEdit = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:5003/api/device/devices/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/device/devices/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

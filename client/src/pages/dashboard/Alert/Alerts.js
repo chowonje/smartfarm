@@ -1,48 +1,69 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getMessaging, onMessage } from 'firebase/messaging';
+import React, { useEffect, useState } from 'react';
 import '../../../styles/Alerts.css';
 
 const Alerts = () => {
   const [alerts, setAlerts] = useState([]);
   const [selectedAlert, setSelectedAlert] = useState(null);
 
-  const firebaseConfig = useMemo(() => ({
-    apiKey: "AIzaSyD1ApjxgWXhd-dCGWksotw7ymKO9oyznD0",
-    authDomain: "smartfarm-notification.firebaseapp.com",
-    projectId: "smartfarm-notification",
-    storageBucket: "smartfarm-notification.firebasestorage.app",
-    messagingSenderId: "564912239654",
-    appId: "1:564912239654:web:d6fcaf7ff1ab565e6f22e7"
-  }), []);
-
   useEffect(() => {
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
+    // Firebase 초기화를 조건부로 수행
+    const initializeFirebase = async () => {
+      try {
+        if (window.location.protocol === 'https:') {
+          const { initializeApp } = await import('firebase/app');
+          const { getMessaging, onMessage } = await import('firebase/messaging');
+          
+          const firebaseConfig = {
+            apiKey: "AIzaSyD1ApjxgWXhd-dCGWksotw7ymKO9oyznD0",
+            authDomain: "smartfarm-notification.firebaseapp.com",
+            projectId: "smartfarm-notification",
+            storageBucket: "smartfarm-notification.firebasestorage.app",
+            messagingSenderId: "564912239654",
+            appId: "1:564912239654:web:d6fcaf7ff1ab565e6f22e7"
+          };
 
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log('알림 수신:', payload);
-      setAlerts(prev => [{
-        id: Date.now(),
-        title: payload.notification.title,
-        body: payload.notification.body,
-        timestamp: new Date().toISOString(),
-        ...payload.data
-      }, ...prev]);
-    });
+          const app = initializeApp(firebaseConfig);
+          const messaging = getMessaging(app);
 
+          onMessage(messaging, (payload) => {
+            console.log('알림 수신:', payload);
+            setAlerts(prev => [{
+              id: Date.now(),
+              title: payload.notification.title,
+              body: payload.notification.body,
+              timestamp: new Date().toISOString(),
+              ...payload.data
+            }, ...prev]);
+          });
+        }
+      } catch (error) {
+        console.log('Firebase 초기화 실패 (프로덕션 환경이 아닐 수 있음):', error);
+      }
+    };
+
+    initializeFirebase();
     fetchAlertsData();
-
-    return () => unsubscribe();
-  }, [firebaseConfig]);
+  }, []);
 
   const fetchAlertsData = async () => {
     try {
-      const response = await fetch('http://localhost:5003/api/alerts', {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('인증 토큰이 없습니다.');
+        return;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/alerts`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch alerts');
+      }
+
       const data = await response.json();
       setAlerts(data);
     } catch (error) {
@@ -58,7 +79,7 @@ const Alerts = () => {
 
     if (!alert.read) {
       try {
-        const response = await fetch(`http://localhost:5003/api/alerts/read/${alert.id}`, {
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/alerts/read/${alert.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -86,7 +107,7 @@ const Alerts = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5003/api/alerts/${alertId}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/alerts/${alertId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

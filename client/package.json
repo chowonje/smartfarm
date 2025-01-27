@@ -27,8 +27,9 @@
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
+
+    "scripts": {
+    "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -54,5 +55,6 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   },
-  "proxy": "http://localhost:5003"
+"proxy": "http://ioko4613.synology.me:5003",
+  "allowedHosts": ["ioko4613.synology.me", "localhost", ".synology.me"]
 }

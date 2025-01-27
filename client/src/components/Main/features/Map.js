@@ -13,7 +13,7 @@ function Map({ activeTab, onLocationSelect }) {
       const initializeMap = () => {
         try {
           const options = {
-            center: new window.kakao.maps.LatLng(35.9443, 126.9568),
+            center: new window.kakao.maps.LatLng(37.5386, 127.1254),
             level: 3
           };
 
@@ -113,7 +113,7 @@ function Map({ activeTab, onLocationSelect }) {
 
     try {
       const response = await fetch(
-        `http://localhost:5003/api/map?query=${encodeURIComponent(searchQuery)}`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/map?query=${encodeURIComponent(searchQuery)}`,
         {
           method: 'GET',
           headers: {

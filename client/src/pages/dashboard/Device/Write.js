@@ -44,7 +44,7 @@ const DeviceWrite = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5003/api/device/devices', {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/device/devices`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -9,10 +9,9 @@ const app = express();
 // CORS 설정
 app.use(cors({
   origin: [
-    'http://localhost:3000', 
-    'http://localhost:3001', 
-    'http://localhost:3002',  // 관리자 페이지용 포트 추가
-    'http://192.168.0.8:3000'
+    `${process.env.REACT_APP_FRONT_API_URL}`, 
+    `${process.env.REACT_APP_ADMIN_API_URL}`,  // 관리자 페이지용 포트 추가
+    `${process.env.REACT_APP_FRONT_API_URL}`
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // 허용할 HTTP 메서드 명시
@@ -57,13 +56,11 @@ app.use(helmet({
         "https://spi.maps.daum.net"
       ],
       connectSrc: [
-        "'self'", 
-        "http://localhost:5000",
-        "http://localhost:5003",
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://192.168.0.8:3000",
+        "'self'",
+        `${process.env.REACT_APP_SERVER_API_URL}`,
+        `${process.env.REACT_APP_FRONT_API_URL}`,
+        `${process.env.REACT_APP_ADMIN_API_URL}`,
+        `${process.env.REACT_APP_FRONT_API_URL}`,
         "https://newsapi.org",
         "https://dapi.kakao.com",
         "https://*.kakao.com",
@@ -87,6 +84,10 @@ app.use(helmet({
 // 요청 로깅 미들웨어를 라우터 등록 전에 배치
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; style-src 'self' 'unsafe-inline' https://www.gstatic.com;"
+  );
   next();
 });
 
@@ -97,9 +98,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 // API 라우트
+const sensorRoutes = require('./routes/sensorRoutes');
 const authRoutes = require('./routes/auth');
 const newsRoutes = require('./routes/news');
-const weatherRoutes = require('./routes/weather');
+const weatherRouter = require('./routes/weather');
 const mapRoutes = require('./routes/map');
 const priceRoutes = require('./routes/price');
 const adminRoutes = require('./routes/admin');
@@ -110,9 +112,10 @@ const alertRoutes = require('./routes/alertRoutes');
 const farmRoutes = require('./routes/farmRoutes');
 
 // 라우터 등록
+app.use('/sensor', sensorRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/weather', weatherRoutes);
+app.use('/api/weather', weatherRouter);
 app.use('/api/map', mapRoutes);
 app.use('/api/price', priceRoutes);
 app.use('/api/admin', adminRoutes);

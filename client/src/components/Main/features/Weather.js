@@ -5,11 +5,21 @@ function Weather({ activeTab, selectedLocation }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // 천호역의 기본 위치 정보
+  const defaultLocation = {
+    latitude: 37.5386,
+    longitude: 127.1254,
+    address: '천호역',
+  };
+
+  // 실제 사용할 위치 정보 (선택된 위치가 있으면 그 위치, 없으면 기본 위치 사용)
+  const locationToUse = selectedLocation || defaultLocation;
 
   const fetchWeather = async (lat, lon) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5003/api/weather?lat=${lat}&lon=${lon}`);
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/weather?lat=${lat}&lon=${lon}`);
       if (response.data) {
         setWeather(response.data);
         setError(null);
@@ -23,8 +33,8 @@ function Weather({ activeTab, selectedLocation }) {
   };
 
   useEffect(() => {
-    if (activeTab === 'weather' && selectedLocation) {
-      fetchWeather(selectedLocation.latitude, selectedLocation.longitude);
+    if (activeTab === 'weather') {
+      fetchWeather(locationToUse.latitude, locationToUse.longitude);
     }
   }, [activeTab, selectedLocation]);
 
@@ -45,7 +55,7 @@ function Weather({ activeTab, selectedLocation }) {
   return (
     <div className="weather-container">
       <h2>
-        {selectedLocation?.address || selectedLocation?.place_name || weather.city}의 날씨
+        {locationToUse.address || locationToUse.place_name || weather.city}의 날씨
       </h2>
       <div className="weather-info">
         <div className="weather-main">

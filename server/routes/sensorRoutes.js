@@ -56,6 +56,25 @@ router.get('/water-tank', async (req, res) => {
     }
 });
 
+// 특정 베드의 센서 데이터 조회
+router.get('/bed/:bedNumber', async (req, res) => {
+    const { bedNumber } = req.params;
+    try {
+        const { data, error } = await supabase
+            .from('bed_sensor_data')
+            .select('*')
+            .eq('bed_number', parseInt(bedNumber))
+            .order('created_at', { ascending: false })
+            .limit(1); // 가장 최근 데이터만 가져오기
+
+        if (error) throw error;
+        res.json(data[0] || {}); // 데이터가 없으면 빈 객체 반환
+    } catch (error) {
+        console.error('베드 센서 데이터 조회 실패:', error);
+        res.status(500).json({ error: '베드 센서 데이터 조회 실패' });
+    }
+});
+
 // 센서 데이터 저장 함수
 const handleSensorData = async (topic, value) => {
     try {

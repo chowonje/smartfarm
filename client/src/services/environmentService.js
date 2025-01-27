@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 export const saveToDatabase = async (bedNumber, sensorData) => {
   try {
-    await fetch('http://192.168.0.76/api/environment/save', {
+    await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/environment/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export const saveToDatabase = async (bedNumber, sensorData) => {
 // 특정 베드의 환경 데이터 조회
 export const getEnvironmentData = async (bedNumber) => {
   try {
-    const response = await fetch(`http://192.168.0.76/api/environment/bed/${bedNumber}`);
+    const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/environment/bed/${bedNumber}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -34,7 +34,7 @@ export const getEnvironmentData = async (bedNumber) => {
 
 // 실시간 데이터 구독을 위한 Socket.IO 연결
 export const subscribeToRealTimeData = (bedNumber, callback) => {
-  const socket = io('http://localhost:5003', {
+  const socket = io(`${process.env.REACT_APP_SERVER_API_URL}`, {
     withCredentials: true,
     transports: ['websocket', 'polling']
   });

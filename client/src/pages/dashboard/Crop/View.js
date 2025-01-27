@@ -8,11 +8,18 @@ const CropView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 날짜 포맷팅 함수 추가
+  const formatDateTime = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${date.toLocaleTimeString()}`;
+  };
+
   useEffect(() => {
     const fetchCropData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5003/api/crops/logs/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/crops/logs/${id}`);
         
         if (!response.ok) {
           throw new Error('데이터를 불러오는데 실패했습니다');
@@ -34,9 +41,19 @@ const CropView = () => {
           light: String(data.light || ''),
           ec: String(data.ec || ''),
           water_level: String(data.water_level || ''),
-          water_temperature: String(data.water_temperature || ''),
-          ph_level: String(data.ph_level || ''),
-          content: String(data.content || '')
+          water_temperature: String(data.water_temp || ''),
+          ph_level: String(data.ph || ''),
+          content: String(data.content || ''),
+          gas: String(data.gas || 'N/A'),
+          weather_temp: data.weather_temp || null,
+          weather_desc: data.weather_desc || null,
+          weather_feels_like: data.weather_feels_like || null,
+          weather_humidity: data.weather_humidity || null,
+          weather_wind_speed: data.weather_wind_speed || null,
+          weather_temp_min: data.weather_temp_min || null,
+          weather_temp_max: data.weather_temp_max || null,
+          weather_sunrise: data.weather_sunrise ? formatDateTime(data.weather_sunrise) : null,
+          weather_sunset: data.weather_sunset ? formatDateTime(data.weather_sunset) : null
         };
 
         setCropData(processedData);
@@ -102,6 +119,10 @@ const CropView = () => {
                 <span>EC (mS/cm)</span>
                 <span className="value">{cropData.ec || 'N/A'}</span>
               </div>
+              <div className="sensor_item">
+                <span>가스 (ppm)</span>
+                <span className="value">{cropData.gas || 'N/A'}</span>
+              </div>
             </div>
           </div>
 
@@ -119,6 +140,48 @@ const CropView = () => {
               <div className="sensor_item">
                 <span>pH</span>
                 <span className="value">{cropData.ph_level || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="sensor_info">
+            <h4>날씨 데이터</h4>
+            <div className="sensor_grid">
+              <div className="sensor_item">
+                <span>기온 (°C)</span>
+                <span className="value">{cropData.weather_temp || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>날씨</span>
+                <span className="value">{cropData.weather_desc || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>체감온도 (°C)</span>
+                <span className="value">{cropData.weather_feels_like || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>습도 (%)</span>
+                <span className="value">{cropData.weather_humidity || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>풍속 (m/s)</span>
+                <span className="value">{cropData.weather_wind_speed || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>최저기온 (°C)</span>
+                <span className="value">{cropData.weather_temp_min || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>최고기온 (°C)</span>
+                <span className="value">{cropData.weather_temp_max || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>일출</span>
+                <span className="value">{cropData.weather_sunrise || 'N/A'}</span>
+              </div>
+              <div className="sensor_item">
+                <span>일몰</span>
+                <span className="value">{cropData.weather_sunset || 'N/A'}</span>
               </div>
             </div>
           </div>

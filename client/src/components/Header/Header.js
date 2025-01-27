@@ -12,7 +12,7 @@ const Header = () => {
 
   const fetchAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:5003/api/alerts/unread');
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/alerts/unread`);
       const data = await response.json();
       
       if (data.success) {

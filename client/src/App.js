@@ -8,7 +8,7 @@ import ChatGPT from './components/Main/features/ChatGPT';
 import Header from './components/Header/Header';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
-import Environment from './pages/dashboard/Environment';
+import Environment from './pages/dashboard/Environment/Environment';
 import Control from './pages/dashboard/Control';
 import CropList from './pages/dashboard/Crop/List';
 import CropWrite from './pages/dashboard/Crop/Write';

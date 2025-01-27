@@ -15,7 +15,7 @@ function FarmManagement() {
     useEffect(() => {
         const fetchFarms = async () => {
             try {
-                const response = await fetch('http://localhost:5003/api/admin/farms', {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/farms`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
                     }
@@ -35,7 +35,7 @@ function FarmManagement() {
     const handleAddFarm = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5003/api/admin/farms', {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/admin/farms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ function FarmManagement() {
     };
 
     const handleFarmSelect = (farmId) => {
-        window.open(`http://localhost:3000?farmId=${farmId}`, '_blank');
+        window.open(`${process.env.REACT_APP_FRONT_API_URL}/?farmId=${farmId}`, '_blank');
     };
 
     return (

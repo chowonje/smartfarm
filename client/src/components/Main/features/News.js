@@ -8,7 +8,7 @@ function News({ activeTab }) {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5003/api/news');
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_API_URL}/api/news`);
       if (response.data.success) {
         setNews(response.data.data);
       }

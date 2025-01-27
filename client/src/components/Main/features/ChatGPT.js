@@ -12,7 +12,7 @@ function ChatGPT() {
 
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5003/api/chatgpt/ask', {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/chatgpt/ask`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

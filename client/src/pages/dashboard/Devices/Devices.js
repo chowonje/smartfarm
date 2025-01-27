@@ -11,7 +11,7 @@ const Devices = () => {
 
   const fetchDevicesData = async () => {
     try {
-      const response = await fetch('http://192.168.0.76/api/devices', {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/devices`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

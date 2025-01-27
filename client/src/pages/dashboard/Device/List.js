@@ -13,7 +13,7 @@ const DeviceList = () => {
     const fetchDevices = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5003/api/device/devices');
+        const response = await fetch(`${process.env.REACT_APP_SERVER_API_URL}/api/device/devices`);
         console.log('Response status:', response.status);
         
         if (!response.ok) {
